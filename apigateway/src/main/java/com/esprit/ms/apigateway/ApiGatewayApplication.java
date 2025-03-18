@@ -19,10 +19,9 @@ public class ApiGatewayApplication {
     public RouteLocator getawayRoutes(RouteLocatorBuilder builder){
         return builder.routes()
                 //nom de l'app ds app.propreties
-                .route("MSCandidat4TWIN2",r->r.path("/candidats/**") //tous les path sous candidats
-                        .uri("lb://MSCandidat4TWIN2"))//port candidat=8080
-                .route("MS-job-s",r->r.path("/jobs/**")
-                        .uri("lb://MS-job-s"))
+                .route("order-service",r->r.path("/api/orders/**") //tous les path sous order
+                        .uri("lb://order-service"))//port order=8080
+
 
                 .build();
     }
