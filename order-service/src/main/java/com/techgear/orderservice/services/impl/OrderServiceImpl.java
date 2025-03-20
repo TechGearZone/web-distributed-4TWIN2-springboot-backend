@@ -50,6 +50,48 @@ public class OrderServiceImpl implements IOrderService {
     }
 
 
-   
+    @Override
+    public void placeOrder(OrderRequestDTO orderRequest) {
+        Order order = new Order();
+        order.setOrderNumber(UUID.randomUUID().toString());
+
+        order.setUserId(orderRequest.getUserId());
+        order.setShippingAddress(orderRequest.getShippingAddress());
+        order.setBillingAddress(orderRequest.getBillingAddress());
+        order.setPaymentMethod(PaymentMethod.valueOf(orderRequest.getPaymentMethod()));
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.PROCESSING);
+
+        // Calculate total amount from order items
+        Long totalAmount = 0L;
+
+        List<OrderItems> orderLineItems = orderRequest.getOrderItemsDtoList()
+                .stream()
+                .map(itemDto -> {
+                    OrderItems orderItem = mapToDto(itemDto);
+                    orderItem.setOrder(order); // Set the relationship
+                    return orderItem;
+                })
+                .toList();
+
+        order.setOrderItemsList(orderLineItems);
+
+        // Calculate total amount
+        for (OrderItems item : orderLineItems) {
+            totalAmount += item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())).longValue();
+        }
+        order.setTotalAmount(totalAmount);
+
+        orderRepository.save(order);
+    }
+
+    private OrderItems mapToDto(OrderItemDTO orderItemsDto) {
+        OrderItems orderItems = new OrderItems();
+        orderItems.setPrice(orderItemsDto.getPrice());
+        orderItems.setQuantity(orderItemsDto.getQuantity());
+        orderItems.setProductName(orderItemsDto.getProductName());
+        orderItems.setProductId(orderItemsDto.getProductId());
+        return orderItems;
+    }
 
 }
