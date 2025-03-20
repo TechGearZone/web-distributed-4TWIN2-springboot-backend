@@ -30,6 +30,6 @@ public class Order {
     private String billingAddress;
     private PaymentMethod paymentMethod;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> items = new ArrayList<>();
+    private List<OrderItems> orderItemsList = new ArrayList<>();
 
 }

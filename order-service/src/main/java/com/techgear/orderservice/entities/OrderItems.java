@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 
 @Getter
 @Setter
@@ -13,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
 @Entity
-public class OrderItem {
+public class OrderItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,5 +27,5 @@ public class OrderItem {
     private Long productId;  // Foreign key to product service
     private String productName;
     private Integer quantity;
-    private Float price;
+    private BigDecimal price;
 }
