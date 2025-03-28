@@ -11,4 +11,5 @@ public interface IDeliveryService {
     void assignDriver(Long deliveryId, Long driverId);
     void unassignDriver(Long deliveryId);
     void deleteDelivery(Long id);
+    DeliveryDTO trackDelivery(String trackingNumber); // New method for tracking
 }

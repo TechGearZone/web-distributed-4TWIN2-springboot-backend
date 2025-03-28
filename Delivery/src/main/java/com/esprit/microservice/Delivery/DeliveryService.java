@@ -91,6 +91,14 @@ public class DeliveryService implements IDeliveryService {
                 .orElseThrow(() -> new ResourceNotFoundException()); // Check existence before deletion
         deliveryRepository.deleteById(id);
     }
+    @Override
+    public DeliveryDTO trackDelivery(String trackingNumber) {
+        Delivery delivery = deliveryRepository.findByTrackingNumberContainingIgnoreCase(trackingNumber)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found with tracking number: " + trackingNumber));
+        return mapToDTO(delivery);
+    }
 
     private DeliveryDTO mapToDTO(Delivery delivery) {
         return new DeliveryDTO(

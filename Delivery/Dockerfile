@@ -1,4 +1,4 @@
 FROM openjdk:17
 EXPOSE 8084
-ADD target/MS_Job_Board-0.0.1-SNAPSHOT.jar JobMSP-docker.jar
-ENTRYPOINT ["java", "-jar", "JobMSP-docker.jar"]
+ADD target/Delivery-0.0.1-SNAPSHOT.jar Delivery-docker.jar
+ENTRYPOINT ["java", "-jar", "Delivery-docker.jar"]

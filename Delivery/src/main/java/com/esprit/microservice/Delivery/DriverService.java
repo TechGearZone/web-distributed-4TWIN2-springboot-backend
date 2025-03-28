@@ -27,4 +27,28 @@ public class DriverService implements IDriverService {
         Driver savedDriver = driverRepository.save(driver);
         return new DriverDTO(savedDriver.getId(), savedDriver.getName(), savedDriver.getPhone());
     }
+
+    @Override
+    public DriverDTO updateDriver(Long id, DriverDTO driverDTO) {
+        Driver driver = driverRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Driver not found with id: " + id));
+        driver.setName(driverDTO.getName());
+        driver.setPhone(driverDTO.getPhone());
+        Driver updatedDriver = driverRepository.save(driver);
+        return new DriverDTO(updatedDriver.getId(), updatedDriver.getName(), updatedDriver.getPhone());
+    }
+
+    @Override
+    public void deleteDriver(Long id) {
+        Driver driver = driverRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Driver not found with id: " + id));
+        driverRepository.delete(driver);
+    }
+
+    @Override
+    public DriverDTO getDriverById(Long id) {
+        Driver driver = driverRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Driver not found with id: " + id));
+        return new DriverDTO(driver.getId(), driver.getName(), driver.getPhone());
+    }
 }

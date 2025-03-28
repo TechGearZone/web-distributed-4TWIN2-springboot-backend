@@ -61,4 +61,9 @@ public class DeliveryController {
         deliveryService.deleteDelivery(id);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/track")
+    public ResponseEntity<DeliveryDTO> trackDelivery(@RequestParam String trackingNumber) {
+        DeliveryDTO delivery = deliveryService.trackDelivery(trackingNumber);
+        return ResponseEntity.ok(delivery);
+    }
 }
