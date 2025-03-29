@@ -2,6 +2,7 @@ package com.techgear.orderservice.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +24,13 @@ public class Order {
     private Long id;
     private String orderNumber;
     private LocalDateTime orderDate;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private Long userId;
-    private Long totalAmount;
+    private BigDecimal totalAmount;
     private String shippingAddress;
     private String billingAddress;
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItems> orderItemsList = new ArrayList<>();

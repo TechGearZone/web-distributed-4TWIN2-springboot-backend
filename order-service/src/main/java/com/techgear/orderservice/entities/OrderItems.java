@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
 @Entity
+@Table(name = "order_items")
 public class OrderItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +27,6 @@ public class OrderItems {
 
     private Long productId;  // Foreign key to product service
     private String productName;
-    private Integer quantity;
-    private BigDecimal price;
+    private BigDecimal quantity;
+    private Float price;
 }
