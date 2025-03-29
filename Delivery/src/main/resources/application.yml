@@ -19,3 +19,4 @@ spring:
           uri: lb://DELIVERY-SERVICE  # Nom du service enregistré dans Eureka
           predicates:
             - Path=/api/deliveries/**
+            - Path=/api/drivers/**
