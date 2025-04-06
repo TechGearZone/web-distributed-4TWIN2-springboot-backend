@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,11 @@ public class DeliveryService implements IDeliveryService {
 
     @Autowired
     private DeliveryRepository deliveryRepository;
+    @Autowired
+    private TwilioConfig twilioConfig;
 
+    @Autowired
+    private PhoneNumberResolver phoneNumberResolver;
     @Override
     public DeliveryDTO getDeliveryById(Long id) {
         Delivery delivery = deliveryRepository.findById(id)
@@ -28,7 +33,19 @@ public class DeliveryService implements IDeliveryService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
-
+    private void sendTrackingNumberSMS(String phoneNumber, String trackingNumber) {
+        try {
+            String messageBody = "Your delivery tracking number is: " + trackingNumber;
+            Message.creator(
+                    new PhoneNumber(phoneNumber), // To number
+                    new PhoneNumber(twilioConfig.getTwilioPhoneNumber()), // From number
+                    messageBody
+            ).create();
+            System.out.println("SMS sent successfully to " + phoneNumber);
+        } catch (Exception e) {
+            System.err.println("Failed to send SMS: " + e.getMessage());
+        }
+    }
     @Override
     public List<DeliveryDTO> searchDeliveries(String trackingNumber, String status) {
         if (trackingNumber != null && !trackingNumber.isEmpty()) {
@@ -53,6 +70,13 @@ public class DeliveryService implements IDeliveryService {
         delivery.setEstimatedDeliveryDate(deliveryDTO.getEstimatedDeliveryDate());
         delivery.setDriverId(deliveryDTO.getDriverId());
         Delivery savedDelivery = deliveryRepository.save(delivery);
+        // Send SMS if tracking number is provided
+        if (deliveryDTO.getTrackingNumber() != null && deliveryDTO.getOrderId() != null) {
+            String phoneNumber = phoneNumberResolver.getPhoneNumberForOrder(deliveryDTO.getOrderId());
+            if (phoneNumber != null) {
+                sendTrackingNumberSMS(phoneNumber, deliveryDTO.getTrackingNumber());
+            }
+        }
         return mapToDTO(savedDelivery);
     }
 
@@ -66,6 +90,7 @@ public class DeliveryService implements IDeliveryService {
         delivery.setEstimatedDeliveryDate(deliveryDTO.getEstimatedDeliveryDate());
         delivery.setDriverId(deliveryDTO.getDriverId());
         Delivery updatedDelivery = deliveryRepository.save(delivery);
+
         return mapToDTO(updatedDelivery);
     }
 
