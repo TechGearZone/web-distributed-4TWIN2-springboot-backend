@@ -3,8 +3,10 @@ package com.techgear.orderservice.api;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.techgear.orderservice.dto.CheckoutRequest;
+import com.techgear.orderservice.services.EmailService;
 import com.techgear.orderservice.services.StripeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +27,7 @@ public class StripeController {
     }
     @GetMapping("/success")
     public String paymentSuccess() {
+
         return "Payment successful!";
     }
 

@@ -5,7 +5,9 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.techgear.orderservice.dto.CheckoutRequest;
 import com.techgear.orderservice.dto.ProductItem;
+import com.techgear.orderservice.entities.Order;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +47,7 @@ public class StripeService {
                             .setQuantity(product.getQuantity())
                             .build();
 
-            lineItems.add(item);
+             lineItems.add(item);
         }
 
         SessionCreateParams params = SessionCreateParams.builder()
@@ -57,4 +59,7 @@ public class StripeService {
 
         return Session.create(params);
     }
+
+
+
 }
