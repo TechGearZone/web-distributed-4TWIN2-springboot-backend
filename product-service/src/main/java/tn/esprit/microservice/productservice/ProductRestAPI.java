@@ -1,6 +1,8 @@
 package tn.esprit.microservice.productservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +13,8 @@ public class ProductRestAPI {
 
     @Autowired
     private IProductService service;
+    @Autowired
+    private TokenService tokenService;
 
     @GetMapping
     public List<Product> getAll() {
@@ -46,5 +50,17 @@ public class ProductRestAPI {
     public List<Product> byCategory(@RequestParam String category) {
         return service.filterByCategory(category);
     }
+
+    @GetMapping(value = "/compare", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ComparisonResult> compareProduct(@RequestParam String name) {
+        ComparisonResult result = service.compareWithExternalSources(name);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/get-token")
+    public String getToken() {
+        return tokenService.getAccessToken();
+    }
+
 }
 

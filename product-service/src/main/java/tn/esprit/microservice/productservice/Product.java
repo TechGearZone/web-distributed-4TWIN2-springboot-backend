@@ -18,10 +18,8 @@ public class Product implements Serializable {
     private double price;
     private int stock;
 
-    // We'll store category as a simple String
     private String category;
 
-    // A list of image URLs (stored as a separate table automatically via ElementCollection)
     @ElementCollection
     private List<String> images;
 
@@ -95,6 +93,5 @@ public class Product implements Serializable {
         updatedAt = LocalDateTime.now();
     }
 
-    // Constructors, Getters and Setters
 }
 
