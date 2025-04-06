@@ -56,11 +56,5 @@ public class ProductRestAPI {
         ComparisonResult result = service.compareWithExternalSources(name);
         return ResponseEntity.ok(result);
     }
-
-    @GetMapping("/get-token")
-    public String getToken() {
-        return tokenService.getAccessToken();
-    }
-
 }
 

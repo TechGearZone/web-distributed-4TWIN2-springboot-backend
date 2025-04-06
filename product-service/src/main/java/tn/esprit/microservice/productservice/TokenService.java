@@ -2,9 +2,12 @@ package tn.esprit.microservice.productservice;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +31,18 @@ public class TokenService {
             fetchAccessToken();
         }
         return accessToken;
+    }
+
+    @Scheduled(fixedRate = 3600000)  // 3600000 ms = 1 hour
+    public void refreshAccessToken() {
+        try {
+            fetchAccessToken();
+            System.out.println("Access token refreshed !");
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            System.err.println("Error fetching access token: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+        }
     }
 
 

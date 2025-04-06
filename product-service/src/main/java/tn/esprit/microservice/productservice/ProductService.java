@@ -45,12 +45,18 @@ public class ProductService implements IProductService {
     @Override
     public Product updateProduct(Long id, Product updated) {
         Product p = getProduct(id);
-        p.setName(updated.getName());
-        p.setDescription(updated.getDescription());
-        p.setPrice(updated.getPrice());
-        p.setStock(updated.getStock());
-        p.setImages(updated.getImages());
-        p.setCategory(updated.getCategory());
+        if(updated.getName() != null)
+            p.setName(updated.getName());
+        if(updated.getDescription() != null)
+            p.setDescription(updated.getDescription());
+        if(updated.getPrice() != 0)
+            p.setPrice(updated.getPrice());
+        if(updated.getCategory() != null)
+            p.setStock(updated.getStock());
+        if(updated.getImages() != null)
+            p.setImages(updated.getImages());
+        if(updated.getName() != null)
+            p.setCategory(updated.getCategory());
         return repo.save(p);
     }
 
