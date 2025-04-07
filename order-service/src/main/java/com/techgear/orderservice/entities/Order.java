@@ -1,5 +1,7 @@
 package com.techgear.orderservice.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.techgear.orderservice.dto.User;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -23,10 +25,16 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String orderNumber;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime orderDate;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-    private Long userId;
+
+
+    @ManyToOne // Create the many-to-one relationship with User
+    @JoinColumn(name = "user_id", referencedColumnName = "id") // Foreign key column
+    private User user;
+
     private BigDecimal totalAmount;
     private String shippingAddress;
     private String billingAddress;

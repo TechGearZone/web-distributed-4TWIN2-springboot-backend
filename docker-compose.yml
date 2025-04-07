@@ -1,0 +1,62 @@
+version: "3.9"
+services:
+
+  Order:
+    container_name: order
+    build: .\order-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql:3306/orderTest?createDatabaseIfNotExist=true&userSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+
+    image: hamzabox/orderms
+    restart: unless-stopped
+    depends_on:
+      - Eureka
+      - db-mysql
+
+
+  Eureka:
+    container_name: eureka
+    build: .\Eureka_TechGear
+    hostname: serviceregistry
+    ports:
+      - "8761:8761"
+    image: hamzabox/eureka
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://serviceregistry:8761/eureka/
+
+
+  db-mysql:
+    image: "mysql:5.6"
+    container_name: db-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root  #indisponsable pour la conteneurisation
+      #- MYSQL_DATABASE=job
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+
+
+  api-gateway:
+    build: .\apiGetway
+    image: hamzabox/apigateway
+    ports:
+      - "8093:8093"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
+    depends_on:
+      - "Eureka"
+      - "Order"
+
+
+
+
+
+
+
+
+
