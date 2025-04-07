@@ -18,7 +18,12 @@ public class DeliveryController {
         DeliveryDTO delivery = deliveryService.getDeliveryById(id);
         return ResponseEntity.ok(delivery);
     }
-
+  @GetMapping("/search/by-status")
+    public ResponseEntity<List<DeliveryDTO>> searchByStatus(
+            @RequestParam String status) {
+        List<DeliveryDTO> deliveries = deliveryService.searchDeliveries(null, status);
+        return ResponseEntity.ok(deliveries);
+    }
     @GetMapping
     public ResponseEntity<List<DeliveryDTO>> getAllDeliveries(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
