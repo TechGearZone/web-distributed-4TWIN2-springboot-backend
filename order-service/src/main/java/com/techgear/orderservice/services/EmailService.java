@@ -26,10 +26,10 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
 
-        // Create a personalized and professional HTML email body
+
         String emailContent = generateEmailContent(customerName, orderDetails);
 
-        helper.setText(emailContent, true); // Set to true to send HTML email
+        helper.setText(emailContent, true);
         emailSender.send(message);
     }
 

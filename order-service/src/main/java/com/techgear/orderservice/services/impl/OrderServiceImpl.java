@@ -29,7 +29,7 @@ public class OrderServiceImpl implements IOrderService {
     private UserRepository userRepository;
     @Override
     public Order createOrder(Order order) {
-        order.getOrderItemsList().forEach(item -> item.setOrder(order)); // set back-reference
+        order.getOrderItemsList().forEach(item -> item.setOrder(order));
         Order savedOrder = orderRepository.save(order);
         try {
             sendOrderEmail(savedOrder, "New Order Assigned: Order #" + savedOrder.getId(), "Please process this order as soon as possible.");
