@@ -2,8 +2,10 @@ package com.techgear.orderservice.api;
 
 
 
+import com.techgear.orderservice.dto.ChatRequestDTO;
 import com.techgear.orderservice.entities.Order;
 
+import com.techgear.orderservice.services.AIChatService;
 import com.techgear.orderservice.services.IOrderService;
 import com.techgear.orderservice.services.PDFService;
 import com.techgear.orderservice.services.ReportSchedulerService;
@@ -22,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Tag(name = "OrderController", description = "Operations related to orders")
@@ -36,6 +40,8 @@ public class OrderController {
     private PDFService pdfService;
     @Autowired
     private ReportSchedulerService reportSchedulerService;
+    @Autowired
+    private AIChatService aiChatService;
 
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
@@ -119,5 +125,16 @@ public class OrderController {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
+    }
+
+
+    @PostMapping("/ask-ai")
+    public ResponseEntity<Map<String, String>> askAI(@RequestBody ChatRequestDTO chatRequest) {
+        String question = chatRequest.getQuestion();
+        String answer = aiChatService.getAIResponse(question);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("answer", answer);
+        return ResponseEntity.ok(response);
     }
 }
