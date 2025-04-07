@@ -13,6 +13,7 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - techgear-network
+    restart: unless-stopped
 
   postgres:
     image: postgres:13
@@ -25,6 +26,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - techgear-network
+    restart: unless-stopped
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.6
@@ -47,6 +49,7 @@ services:
       - postgres
     networks:
       - techgear-network
+    restart: unless-stopped
 
   eureka-server:
     build: ./eureka-server
@@ -55,6 +58,7 @@ services:
       - "8761:8761"
     networks:
       - techgear-network
+    restart: unless-stopped
 
   user-service:
     build: ./user-service
@@ -74,6 +78,7 @@ services:
       - keycloak
     networks:
       - techgear-network
+    restart: on-failure:10
 
   api-gateway:
     build: ./api-gateway
@@ -95,6 +100,7 @@ services:
       - keycloak
     networks:
       - techgear-network
+    restart: on-failure:10
 
 volumes:
   mysql_data:
