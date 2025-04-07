@@ -1,4 +1,5 @@
 /*
+
 package com.techgear.orderservice.config;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -51,4 +52,5 @@ public class KeycloakConfig {
         }
         return keycloak;
     }
-}*/
+}
+*/

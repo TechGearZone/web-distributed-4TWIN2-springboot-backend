@@ -5,10 +5,7 @@ package com.techgear.orderservice.api;
 import com.techgear.orderservice.dto.ChatRequestDTO;
 import com.techgear.orderservice.entities.Order;
 
-import com.techgear.orderservice.services.AIChatService;
-import com.techgear.orderservice.services.IOrderService;
-import com.techgear.orderservice.services.PDFService;
-import com.techgear.orderservice.services.ReportSchedulerService;
+import com.techgear.orderservice.services.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +39,8 @@ public class OrderController {
     private ReportSchedulerService reportSchedulerService;
     @Autowired
     private AIChatService aiChatService;
+    @Autowired
+    private QrCodeService qrCodeService;
 
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
@@ -136,5 +135,30 @@ public class OrderController {
         Map<String, String> response = new HashMap<>();
         response.put("answer", answer);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/qr")
+    public ResponseEntity<byte[]> generateQrCode(@PathVariable Long id) {
+        // Retrieve the order by ID from your orderService
+        Order order = orderService.getOrderById(id);
+        if (order == null) {
+            return ResponseEntity.notFound().build();  // Return 404 if the order is not found
+        }
+
+        // Create the QR code content (you can customize this as needed)
+        String qrCodeText = "Order ID: " + order.getId() + ", Customer: " + order.getUserId() + ", Total: " + order.getTotalAmount();
+
+        try {
+            // Generate the QR code using the QRCodeService
+            byte[] image = qrCodeService.generateQrCode(qrCodeText, 250, 250);
+
+            // Return the QR code as a PNG image
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(image);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();  // Return 500 if there’s an error generating the QR code
+        }
     }
 }
