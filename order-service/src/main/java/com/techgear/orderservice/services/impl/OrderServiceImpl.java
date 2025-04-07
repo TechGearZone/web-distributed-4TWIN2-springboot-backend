@@ -29,15 +29,14 @@ public class OrderServiceImpl implements IOrderService {
     private UserRepository userRepository;
     @Override
     public Order createOrder(Order order) {
-        order.getOrderItemsList().forEach(item -> item.setOrder(order));
+        order.getOrderItemsList().forEach(item -> item.setOrder(order)); // set back-reference
         Order savedOrder = orderRepository.save(order);
-        try {
-            sendOrderEmail(savedOrder, "New Order Assigned: Order #" + savedOrder.getId(), "Please process this order as soon as possible.");
-        } catch (Exception e) {
-            log.error("Failed to send order notification email: {}", e.getMessage());
-        }
+        sendOrderEmail(savedOrder, "New Order Assigned: Order #" + savedOrder.getId(), "Please process this order as soon as possible.");
+
         return savedOrder;
     }
+
+
 
 
     @Override
@@ -55,36 +54,37 @@ public class OrderServiceImpl implements IOrderService {
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
     }
-    private void sendOrderEmail(Order order, String subject, String message) {
-        // Get user information from the repository
-        Optional<User> userOptional = userRepository.findById(order.getUserId());
 
-        if (!userOptional.isPresent()) {
-            log.error("User with ID {} not found, cannot send email notification", order.getUserId());
-            return;
-        }
+ private void sendOrderEmail(Order order, String subject, String message) {
+     // Get user information from the repository
+     Optional<User> userOptional = userRepository.findById(order.getUser().getId());
 
-        User user = userOptional.get();
-        String recipientEmail = user.getEmail();
+     if (!userOptional.isPresent()) {
+         log.error("User with ID {} not found, cannot send email notification", order.getUser().getId());
+         return;
+     }
 
-        // If the user's email is not available, fall back to a default email
-        if (recipientEmail == null || recipientEmail.isEmpty()) {
-            recipientEmail = "ayari.hamza1@esprit.tn"; // Fallback email
-            log.warn("User email not found, using fallback email");
-        }
+     User user = userOptional.get();
+     String recipientEmail = user.getEmail();
 
-        // Generate a more personalized and detailed email message for the employee
-        String employeeMessage = generateEmployeeEmailContent(order, user, message);
+     // If the user's email is not available, fall back to a default email
+     if (recipientEmail == null || recipientEmail.isEmpty()) {
+         recipientEmail = "ayari.hamza1@esprit.tn"; // Fallback email
+         log.warn("User email not found, using fallback email");
+     }
 
-        // Call the email service to send the email
-        try {
-            emailService.sendEmail(recipientEmail, subject, user.getName(), employeeMessage);
-            log.info("Order notification email sent successfully to {}", recipientEmail);
-        } catch (MessagingException e) {
-            log.error("Failed to send email to employee: {}", e.getMessage());
-        }
-    }
 
+     String employeeMessage = generateEmployeeEmailContent(order, user, message);
+
+
+     try {
+         log.info("Attempting to send email to: {}", recipientEmail);
+         emailService.sendEmail(recipientEmail, subject, user.getName(), employeeMessage);
+         log.info("Email sent successfully to {}", recipientEmail);
+     } catch (MessagingException e) {
+         log.error("Failed to send email to {}: {}", recipientEmail, e.getMessage(), e);
+     }
+ }
     private String generateEmployeeEmailContent(Order order, User user, String customMessage) {
         StringBuilder emailContent = new StringBuilder();
 
@@ -98,7 +98,7 @@ public class OrderServiceImpl implements IOrderService {
                 .append("</style></head>")
                 .append("<body>")
                 .append("<h1>New Order Assigned</h1>")
-                .append("<p>Dear Employee,</p>")
+                .append("<p>Dear Client,</p>")
                 .append("<p>You have been assigned a new order. Below are the order details:</p>")
                 .append("<div class='order-details'>")
                 .append("<h2>Order Details</h2>")
@@ -129,6 +129,7 @@ public class OrderServiceImpl implements IOrderService {
 
         return emailContent.toString();
     }
+
 }
 
 

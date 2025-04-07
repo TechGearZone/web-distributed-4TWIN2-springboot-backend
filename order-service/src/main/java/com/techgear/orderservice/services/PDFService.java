@@ -34,7 +34,7 @@ public class PDFService {
                 .orElseThrow(() -> new Exception("Order not found with id: " + orderId));
 
         // Get user information if available
-        Optional<User> userOptional = userRepository.findById(order.getUserId());
+        Optional<User> userOptional = userRepository.findById(order.getUser().getId());
 
         // Setup document
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -76,7 +76,7 @@ public class PDFService {
             document.add(new Paragraph("Email: " + user.getEmail(), normalFont));
             document.add(new Paragraph("Phone: " + user.getPhoneNumber(), normalFont));
         } else {
-            document.add(new Paragraph("Customer ID: " + order.getUserId(), normalFont));
+            document.add(new Paragraph("Customer ID: " + order.getUser().getId(), normalFont));
         }
 
         document.add(new Paragraph("Shipping Address: " + order.getShippingAddress(), normalFont));
@@ -248,7 +248,7 @@ public class PDFService {
             table.addCell(order.getId().toString());
             table.addCell(order.getOrderNumber());
             table.addCell(order.getOrderDate().format(dateTimeFormat));
-            table.addCell(order.getUserId().toString());
+            table.addCell(order.getUser().getId().toString());
             table.addCell(order.getStatus().toString());
             table.addCell(order.getPaymentMethod().toString());
             table.addCell("$" + String.format("%.2f", order.getTotalAmount()));

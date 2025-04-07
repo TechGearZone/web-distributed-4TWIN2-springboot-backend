@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -102,14 +103,25 @@ public class OrderController {
 
     @GetMapping("/reports/custom")
     public ResponseEntity<InputStreamResource> generateCustomReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            @RequestParam(required = false) boolean sendToAdmin) {
 
         try {
             ByteArrayInputStream pdfStream = reportSchedulerService.generateCustomDateRangeReport(startDate, endDate);
 
             if (pdfStream == null) {
                 return ResponseEntity.badRequest().build();
+            }
+
+            if (sendToAdmin) {
+
+                byte[] data = pdfStream.readAllBytes();
+                ByteArrayInputStream adminCopy = new ByteArrayInputStream(data);
+                pdfStream = new ByteArrayInputStream(data);
+
+                reportSchedulerService.sendReportToAdmin(adminCopy,
+                        "Custom Report " + startDate + " to " + endDate);
             }
 
             HttpHeaders headers = new HttpHeaders();
@@ -139,26 +151,25 @@ public class OrderController {
 
     @GetMapping("/{id}/qr")
     public ResponseEntity<byte[]> generateQrCode(@PathVariable Long id) {
-        // Retrieve the order by ID from your orderService
         Order order = orderService.getOrderById(id);
         if (order == null) {
-            return ResponseEntity.notFound().build();  // Return 404 if the order is not found
+            return ResponseEntity.notFound().build();
         }
 
-        // Create the QR code content (you can customize this as needed)
-        String qrCodeText = "Order ID: " + order.getId() + ", Customer: " + order.getUserId() + ", Total: " + order.getTotalAmount();
-
+        String qrCodeText = "Order ID: " + order.getId()
+                + ", Customer: " + order.getUser().getName()
+                + ", Total: " + order.getTotalAmount();
         try {
-            // Generate the QR code using the QRCodeService
+
             byte[] image = qrCodeService.generateQrCode(qrCodeText, 250, 250);
 
-            // Return the QR code as a PNG image
+
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)
                     .body(image);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().build();  // Return 500 if there’s an error generating the QR code
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
