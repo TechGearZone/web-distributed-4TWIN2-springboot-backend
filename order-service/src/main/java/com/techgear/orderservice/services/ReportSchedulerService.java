@@ -1,13 +1,7 @@
 package com.techgear.orderservice.services;
 
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -117,7 +111,14 @@ public class ReportSchedulerService {
         document.addTitle(reportTitle + " - " + dateRange);
 
         document.open();
-
+        try {
+            Image logo = Image.getInstance(getClass().getClassLoader().getResource("logo.png"));
+            logo.scaleToFit(120, 60);
+            logo.setAlignment(Image.ALIGN_RIGHT);
+            document.add(logo);
+        } catch (Exception e) {
+            System.err.println("Could not load logo: " + e.getMessage());
+        }
         // Add title
         Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
         Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);

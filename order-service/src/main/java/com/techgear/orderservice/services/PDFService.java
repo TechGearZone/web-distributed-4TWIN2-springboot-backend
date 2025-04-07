@@ -48,8 +48,14 @@ public class PDFService {
 
         document.open();
 
-        // Add company logo (if available)
-        // Image logo = Image.getInstance("path/to/logo.png");
+        try {
+            Image logo = Image.getInstance(getClass().getClassLoader().getResource("logo.png"));
+            logo.scaleToFit(120, 60); // Resize if needed
+            logo.setAlignment(Image.ALIGN_RIGHT); // You can use ALIGN_CENTER or ALIGN_LEFT too
+            document.add(logo);
+        } catch (Exception e) {
+            System.err.println("Could not load logo: " + e.getMessage());
+        }
         // logo.setAlignment(Element.ALIGN_RIGHT);
         // document.add(logo);
 
