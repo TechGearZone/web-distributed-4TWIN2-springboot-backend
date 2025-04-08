@@ -30,7 +30,6 @@ public class StripeService {
             SessionCreateParams.LineItem.PriceData.ProductData productData =
                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
                             .setName(product.getProductName())
-                            // You can add more product details if needed
                             .setDescription("Product description") // Optional
                             .build();
 
