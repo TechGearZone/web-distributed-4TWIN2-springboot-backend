@@ -14,11 +14,8 @@ public class ProductRestAPI {
     @Autowired
     private IProductService service;
     @Autowired
-<<<<<<< HEAD
-    private ProductRepository productRepository;
-=======
     private TokenService tokenService;
->>>>>>> 952ec5fb9a8287a5b4ff682233fbeeebc5466ddd
+    private ProductRepository productRepository;
 
     @GetMapping
     public List<Product> getAll() {
@@ -55,7 +52,12 @@ public class ProductRestAPI {
         return service.filterByCategory(category);
     }
 
-<<<<<<< HEAD
+    @GetMapping(value = "/compare", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ComparisonResult> compareProduct(@RequestParam String name) {
+        ComparisonResult result = service.compareWithExternalSources(name);
+        return ResponseEntity.ok(result);
+    }
+
     @PutMapping("/{id}/reduce-stock")
     public void reduceStock(@PathVariable Long id, @RequestParam int quantity) {
         Product product = productRepository.findById(id)
@@ -68,15 +70,4 @@ public class ProductRestAPI {
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
     }
-
-
-
-=======
-    @GetMapping(value = "/compare", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ComparisonResult> compareProduct(@RequestParam String name) {
-        ComparisonResult result = service.compareWithExternalSources(name);
-        return ResponseEntity.ok(result);
-    }
->>>>>>> 952ec5fb9a8287a5b4ff682233fbeeebc5466ddd
 }
-
