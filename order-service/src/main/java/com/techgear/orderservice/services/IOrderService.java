@@ -1,5 +1,6 @@
 package com.techgear.orderservice.services;
 
+import com.techgear.orderservice.dto.Product;
 import com.techgear.orderservice.entities.Order;
 
 
@@ -12,4 +13,7 @@ public interface IOrderService {
     Order getOrderById(Long id);
     List<Order> getAllOrders();
     void deleteOrder(Long id);
+    public Order updateOrder(Long id, Order updatedOrder);
+    public Product fetchProductDetails(Long productId);
+    public List<Order> getUnpaidOrders();
 }

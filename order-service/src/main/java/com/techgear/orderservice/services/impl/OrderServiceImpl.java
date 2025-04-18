@@ -1,9 +1,12 @@
 package com.techgear.orderservice.services.impl;
 
+import com.techgear.orderservice.clients.ProductClient;
+import com.techgear.orderservice.dto.Product;
 import com.techgear.orderservice.dto.User;
 import com.techgear.orderservice.entities.Order;
 
 import com.techgear.orderservice.entities.OrderItems;
+import com.techgear.orderservice.entities.OrderStatus;
 import com.techgear.orderservice.repositories.OrderRepository;
 import com.techgear.orderservice.repositories.UserRepository;
 import com.techgear.orderservice.services.EmailService;
@@ -27,17 +30,57 @@ public class OrderServiceImpl implements IOrderService {
     private final OrderRepository orderRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ProductClient productClient;
+
     @Override
     public Order createOrder(Order order) {
-        order.getOrderItemsList().forEach(item -> item.setOrder(order)); // set back-reference
+        // Set basic order info
+        order.setOrderDate(java.time.LocalDateTime.now());
+        order.setStatus(OrderStatus.PROCESSING);
+
+        // To hold total
+        java.math.BigDecimal totalAmount = java.math.BigDecimal.ZERO;
+
+        // Set back-reference and populate each item
+        for (OrderItems item : order.getOrderItemsList()) {
+            item.setOrder(order); // back-reference
+
+            // 🔥 Fetch product info from ProductService
+            Product product = productClient.getProductById(item.getProductId());
+
+            // ✅ Check stock
+            if (product.getStock() < item.getQuantity().intValue()) {
+                throw new RuntimeException("Not enough stock for product: " + product.getName() +
+                        ". Available: " + product.getStock() +
+                        ", Requested: " + item.getQuantity());
+            }
+
+            // ✅ Set product info
+            item.setProductName(product.getName());
+            item.setPrice((float) product.getPrice());
+
+            // ✅ Calculate total
+            java.math.BigDecimal itemTotal = java.math.BigDecimal.valueOf(product.getPrice())
+                    .multiply(item.getQuantity());
+            totalAmount = totalAmount.add(itemTotal);
+        }
+
+        // ✅ Set total amount and save
+        order.setTotalAmount(totalAmount);
+
         Order savedOrder = orderRepository.save(order);
+
+        // ✅ Send email
         sendOrderEmail(savedOrder, "New Order Assigned: Order #" + savedOrder.getId(), "Please process this order as soon as possible.");
 
         return savedOrder;
     }
 
-
-
+@Override
+    public List<Order> getUnpaidOrders() {
+        return orderRepository.findByStatus(OrderStatus.PROCESSING);
+    }
 
     @Override
     public Order getOrderById(Long id) {
@@ -55,7 +98,40 @@ public class OrderServiceImpl implements IOrderService {
         orderRepository.deleteById(id);
     }
 
- private void sendOrderEmail(Order order, String subject, String message) {
+    @Override
+    public Order updateOrder(Long id, Order updatedOrder) {
+        // Fetch the existing order
+        Order existingOrder = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Update the fields conditionally, only if the field in updatedOrder is not null
+        if (updatedOrder.getOrderNumber() != null) {
+            existingOrder.setOrderNumber(updatedOrder.getOrderNumber());
+        }
+        if (updatedOrder.getShippingAddress() != null) {
+            existingOrder.setShippingAddress(updatedOrder.getShippingAddress());
+        }
+        if (updatedOrder.getPaymentMethod() != null) {
+            existingOrder.setPaymentMethod(updatedOrder.getPaymentMethod());
+        }
+        if (updatedOrder.getTotalAmount() != null) {
+            existingOrder.setTotalAmount(updatedOrder.getTotalAmount());
+        }
+        if (updatedOrder.getOrderItemsList() != null && !updatedOrder.getOrderItemsList().isEmpty()) {
+            existingOrder.setOrderItemsList(updatedOrder.getOrderItemsList());
+        }
+
+        // Save the updated order
+        Order savedOrder = orderRepository.save(existingOrder);
+
+        // Send email (optional)
+        sendOrderEmail(savedOrder, "Order Updated: Order #" + savedOrder.getId(), "Your order has been updated.");
+
+        return savedOrder;
+    }
+
+
+    private void sendOrderEmail(Order order, String subject, String message) {
      // Get user information from the repository
      Optional<User> userOptional = userRepository.findById(order.getUser().getId());
 
@@ -129,6 +205,13 @@ public class OrderServiceImpl implements IOrderService {
 
         return emailContent.toString();
     }
+    /////product
+
+    @Override
+    public Product fetchProductDetails(Long productId) {
+        return productClient.getProductById(productId);
+    }
+
 
 }
 

@@ -19,7 +19,7 @@ public class ApiGatewayApplication {
     public RouteLocator getawayRoutes(RouteLocatorBuilder builder){
         return builder.routes()
                 //nom de l'app ds app.propreties
-                .route("order-service",r->r.path("/api/orders/**") //tous les path sous order
+                .route("order-service",r->r.path("/api/**") //tous les path sous order
                         .uri("lb://order-service"))//port order=8080
 
 
