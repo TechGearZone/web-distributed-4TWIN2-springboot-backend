@@ -11,6 +11,8 @@ public class ProductRestAPI {
 
     @Autowired
     private IProductService service;
+    @Autowired
+    private ProductRepository productRepository;
 
     @GetMapping
     public List<Product> getAll() {
@@ -46,5 +48,21 @@ public class ProductRestAPI {
     public List<Product> byCategory(@RequestParam String category) {
         return service.filterByCategory(category);
     }
+
+    @PutMapping("/{id}/reduce-stock")
+    public void reduceStock(@PathVariable Long id, @RequestParam int quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (product.getStock() < quantity) {
+            throw new RuntimeException("Not enough stock to reduce");
+        }
+
+        product.setStock(product.getStock() - quantity);
+        productRepository.save(product);
+    }
+
+
+
 }
 

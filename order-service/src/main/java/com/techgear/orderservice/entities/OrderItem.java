@@ -13,17 +13,20 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
 @Entity
+@Table(name = "order_items")
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+
 
     private Long productId;  // Foreign key to product service
     private String productName;
     private Integer quantity;
     private Float price;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 }
