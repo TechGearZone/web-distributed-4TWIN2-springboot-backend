@@ -18,13 +18,8 @@ public class ApiGatewayApplication {
     @Bean
     public RouteLocator getawayRoutes(RouteLocatorBuilder builder){
         return builder.routes()
-                //nom de l'app ds app.propreties
-                .route("order-service",r->r.path("/api/orders/**") //tous les path sous order
-                        .uri("lb://order-service"))//port order=8080
-
-                .route("product-service",r->r.path("/api/products/**") //tous les path sous order
+                .route("product-service",r->r.path("/api/products/**") //tous les path sous product
                         .uri("lb://product-service"))
-
 
                 .build();
     }

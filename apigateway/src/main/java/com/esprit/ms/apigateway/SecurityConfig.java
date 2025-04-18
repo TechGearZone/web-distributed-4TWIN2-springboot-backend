@@ -1,4 +1,4 @@
-package com.esprit.ms.apigateway;
+/*package com.esprit.ms.apigateway;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,3 +24,4 @@ public class SecurityConfig {
 
 
 }
+*/

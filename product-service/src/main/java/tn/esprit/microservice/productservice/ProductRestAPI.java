@@ -1,6 +1,8 @@
 package tn.esprit.microservice.productservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,7 +14,11 @@ public class ProductRestAPI {
     @Autowired
     private IProductService service;
     @Autowired
+<<<<<<< HEAD
     private ProductRepository productRepository;
+=======
+    private TokenService tokenService;
+>>>>>>> 952ec5fb9a8287a5b4ff682233fbeeebc5466ddd
 
     @GetMapping
     public List<Product> getAll() {
@@ -49,6 +55,7 @@ public class ProductRestAPI {
         return service.filterByCategory(category);
     }
 
+<<<<<<< HEAD
     @PutMapping("/{id}/reduce-stock")
     public void reduceStock(@PathVariable Long id, @RequestParam int quantity) {
         Product product = productRepository.findById(id)
@@ -64,5 +71,12 @@ public class ProductRestAPI {
 
 
 
+=======
+    @GetMapping(value = "/compare", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ComparisonResult> compareProduct(@RequestParam String name) {
+        ComparisonResult result = service.compareWithExternalSources(name);
+        return ResponseEntity.ok(result);
+    }
+>>>>>>> 952ec5fb9a8287a5b4ff682233fbeeebc5466ddd
 }
 
