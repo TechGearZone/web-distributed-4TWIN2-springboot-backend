@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @RestController
@@ -16,6 +16,14 @@ public class ProductRestAPI {
     @Autowired
     private TokenService tokenService;
     private ProductRepository productRepository;
+
+@Value("${welcome.message}")
+    private String welcomeMessage;
+
+    @GetMapping("/welcome")
+    public String welcome() {
+        return welcomeMessage;
+    }
 
     @GetMapping
     public List<Product> getAll() {
