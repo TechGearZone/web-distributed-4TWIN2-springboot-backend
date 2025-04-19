@@ -19,7 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
@@ -45,7 +45,13 @@ public class OrderController {
     @Autowired
     private QrCodeService qrCodeService;
 
+@Value("${welcome.message}")
+    private String welcomeMessage;
 
+    @GetMapping("/welcome")
+    public String welcome() {
+        return welcomeMessage;
+    }
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
         return orderService.createOrder(order);
