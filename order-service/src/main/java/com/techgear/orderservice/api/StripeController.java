@@ -6,13 +6,17 @@ import com.stripe.model.checkout.Session;
 import com.techgear.orderservice.clients.ProductClient;
 import com.techgear.orderservice.dto.CheckoutRequest;
 import com.techgear.orderservice.dto.Product;
+import com.techgear.orderservice.dto.StockUpdateMessage;
 import com.techgear.orderservice.entities.Order;
 import com.techgear.orderservice.entities.OrderItems;
 import com.techgear.orderservice.entities.OrderStatus;
 import com.techgear.orderservice.entities.PaymentMethod;
 import com.techgear.orderservice.services.IOrderService;
+import com.techgear.orderservice.services.RabbitMQSender;
 import com.techgear.orderservice.services.StripeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +31,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
+@Slf4j
 public class StripeController {
 
     private final StripeService stripeService;
@@ -34,6 +39,8 @@ public class StripeController {
     private ProductClient productClient;
     @Autowired
     private IOrderService orderService;
+    @Autowired
+    private RabbitMQSender rabbitMQSender;
 
     // Store session ID to order ID mapping for tracking
     private final Map<String, Long> sessionToOrderMap = new HashMap<>();
@@ -151,7 +158,15 @@ public class StripeController {
 
         // Reduce product stock
         for (OrderItems item : order.getOrderItemsList()) {
-            productClient.reduceStock(item.getProductId(), item.getQuantity().intValue());
+            // Send the actual quantity from the order item, not the quantity field
+            int quantityToReduce = item.getQuantity().intValue();
+
+            log.info("Sending stock update message for productId: {}, quantity: {}",
+                    item.getProductId(), quantityToReduce);
+
+            rabbitMQSender.sendStockUpdate(new StockUpdateMessage(
+                    item.getProductId(), quantityToReduce
+            ));
         }
 
         // Remove the session mapping
