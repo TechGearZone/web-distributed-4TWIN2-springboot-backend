@@ -1,4 +1,4 @@
 FROM openjdk:17
 EXPOSE 8761
-ADD "target/Eureka_TechGear-0.0.1-SNAPSHOT.jar" "eureka.jar"
+ADD target/Eureka_4TWIN2-0.0.1-SNAPSHOT.jar eureka.jar
 ENTRYPOINT ["java","-jar","eureka.jar"] 
