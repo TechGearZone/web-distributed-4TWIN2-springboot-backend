@@ -1,0 +1,22 @@
+# application.yml (dans le projet de la passerelle)
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: delivery-service
+          uri: lb://DELIVERY-SERVICE  # Nom du service enregistré dans Eureka
+          predicates:
+            - Path=/api/deliveries/**
+            - Path=/api/drivers/**
