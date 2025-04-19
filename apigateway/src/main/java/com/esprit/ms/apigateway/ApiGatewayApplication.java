@@ -15,7 +15,7 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
-    @Bean
+/*    @Bean
     public RouteLocator getawayRoutes(RouteLocatorBuilder builder){
         return builder.routes()
                 //nom de l'app ds app.propreties
@@ -24,5 +24,5 @@ public class ApiGatewayApplication {
 
 
                 .build();
-    }
+    }*/
 }
