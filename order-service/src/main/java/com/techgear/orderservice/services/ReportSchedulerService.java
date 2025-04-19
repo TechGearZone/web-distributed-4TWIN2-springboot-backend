@@ -50,7 +50,7 @@ public class ReportSchedulerService {
     @Value("${spring.mail.username:hamzosayari07@gmail.com}")
     private String emailFrom;
 
-    @Scheduled(cron = "0 0/2 * * * ?") // Every 2 minutes
+    @Scheduled(cron = "0 0/30 * * * ?") // Every 2 minutes
     public void generateDailyOrderReportAndSendToAdmin() {
         try {
             LocalDate today = LocalDate.now();

@@ -2,7 +2,9 @@ package com.techgear.orderservice.api;
 
 
 
+import com.stripe.service.climate.OrderService;
 import com.techgear.orderservice.dto.ChatRequestDTO;
+import com.techgear.orderservice.dto.Product;
 import com.techgear.orderservice.entities.Order;
 
 import com.techgear.orderservice.services.*;
@@ -43,6 +45,7 @@ public class OrderController {
     @Autowired
     private QrCodeService qrCodeService;
 
+
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
         return orderService.createOrder(order);
@@ -63,6 +66,11 @@ public class OrderController {
         orderService.deleteOrder(id);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order updatedOrder) {
+        Order order = orderService.updateOrder(id, updatedOrder);
+        return ResponseEntity.ok(order);
+    }
     @GetMapping("/{orderId}/invoice")
     public ResponseEntity<InputStreamResource> generateInvoice(@PathVariable Long orderId) {
         try {
@@ -172,4 +180,12 @@ public class OrderController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
+    //////////prod
+    @GetMapping("/product/{id}")
+    public Product getProductDetails(@PathVariable Long id) {
+        return orderService.fetchProductDetails(id);
+    }
+
 }
