@@ -11,6 +11,18 @@ services:
     environment:
       - eureka.client.serviceUrl.defaultZone=http://serviceregistry:8761/eureka/
 
+  config-server:
+    container_name: config-server
+    build: ./demoConfigServer
+    ports:
+      - "8888:8888"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=native
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCHLOCATIONS=classpath:/config
+    depends_on:
+      - eureka
+
   api-gateway:
     container_name: api-gateway
     build: ./api-gateway
@@ -21,6 +33,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
     depends_on:
       - eureka
+      - config-server
 
   user-service:
     container_name: user
@@ -34,10 +47,12 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/techgear
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/techgear/protocol/openid-connect/certs
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
     depends_on:
       - eureka
       - db-mysql
       - keycloak
+      - config-server
 
   order-service:
     container_name: order
@@ -49,10 +64,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
     image: hamzabox/orderms
     depends_on:
       - eureka
       - db-mysql
+      - config-server
 
   product-service:
     container_name: product
@@ -64,9 +81,27 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
     depends_on:
       - eureka
       - db-mysql
+      - config-server
+
+  delivery-service:
+    container_name: delivery
+    build: ./delivery-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql:3306/Delivery?createDatabaseIfNotExist=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    depends_on:
+      - eureka
+      - db-mysql
+      - config-server
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.6
