@@ -15,14 +15,15 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
-/*    @Bean
+   /*@Bean
     public RouteLocator getawayRoutes(RouteLocatorBuilder builder){
         return builder.routes()
                 //nom de l'app ds app.propreties
                 .route("order-service",r->r.path("/api/**") //tous les path sous order
                         .uri("lb://order-service"))//port order=8080
 
-
+                .route("customer-service",r->r.path("/api/**") //tous les path sous order
+                        .uri("lb://customer-service"))
                 .build();
     }*/
 }
