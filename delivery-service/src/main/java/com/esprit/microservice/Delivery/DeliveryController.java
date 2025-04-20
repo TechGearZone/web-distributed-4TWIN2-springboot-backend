@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/drivers")
-public class DriverController {
+@RequestMapping("/api/deliveries")
+public class DeliveryController {
 
     @Autowired
-    private IDriverService driverService;
+    private IDeliveryService deliveryService;
 
-@Value("${welcome.message}")
+    @Value("${welcome.message}")
     private String welcomeMessage;
 
     @GetMapping("/welcome")
@@ -22,32 +22,32 @@ public class DriverController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DriverDTO>> getAllDrivers() {
-        List<DriverDTO> drivers = driverService.getAllDrivers();
-        return ResponseEntity.ok(drivers);
+    public ResponseEntity<List<DeliveryDTO>> getAllDeliveries() {
+        List<DeliveryDTO> deliveries = deliveryService.getAllDeliveries();
+        return ResponseEntity.ok(deliveries);
     }
 
     @PostMapping
-    public ResponseEntity<DriverDTO> createDriver(@RequestBody DriverDTO driverDTO) {
-        DriverDTO createdDriver = driverService.createDriver(driverDTO);
-        return ResponseEntity.ok(createdDriver);
+    public ResponseEntity<DeliveryDTO> createDelivery(@RequestBody DeliveryDTO deliveryDTO) {
+        DeliveryDTO createdDelivery = deliveryService.createDelivery(deliveryDTO);
+        return ResponseEntity.ok(createdDelivery);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DriverDTO> updateDriver(@PathVariable Long id, @RequestBody DriverDTO driverDTO) {
-        DriverDTO updatedDriver = driverService.updateDriver(id, driverDTO);
-        return ResponseEntity.ok(updatedDriver);
+    public ResponseEntity<DeliveryDTO> updateDelivery(@PathVariable Long id, @RequestBody DeliveryDTO deliveryDTO) {
+        DeliveryDTO updatedDelivery = deliveryService.updateDelivery(id, deliveryDTO);
+        return ResponseEntity.ok(updatedDelivery);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDriver(@PathVariable Long id) {
-        driverService.deleteDriver(id);
+    public ResponseEntity<Void> deleteDelivery(@PathVariable Long id) {
+        deliveryService.deleteDelivery(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DriverDTO> getDriverById(@PathVariable Long id) {
-        DriverDTO driver = driverService.getDriverById(id);
-        return ResponseEntity.ok(driver);
+    public ResponseEntity<DeliveryDTO> getDeliveryById(@PathVariable Long id) {
+        DeliveryDTO delivery = deliveryService.getDeliveryById(id);
+        return ResponseEntity.ok(delivery);
     }
 }
