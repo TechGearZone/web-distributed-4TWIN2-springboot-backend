@@ -22,8 +22,8 @@ public class DeliveryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DeliveryDTO>> getAllDeliveries() {
-        List<DeliveryDTO> deliveries = deliveryService.getAllDeliveries();
+    public ResponseEntity<List<DeliveryDTO>> getAllDeliveries(@RequestParam(defaultValue = "id") String sortBy) {
+        List<DeliveryDTO> deliveries = deliveryService.getAllDeliveries(sortBy);
         return ResponseEntity.ok(deliveries);
     }
 
