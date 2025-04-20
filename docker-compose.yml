@@ -3,7 +3,7 @@ services:
 
   eureka:
     container_name: eureka
-    build: ./Eureka_TechGear
+    build: ./eureka-server
     hostname: serviceregistry
     ports:
       - "8761:8761"
@@ -13,7 +13,7 @@ services:
 
   api-gateway:
     container_name: api-gateway
-    build: ./apigateway
+    build: ./api-gateway
     image: hamzabox/apigateway
     ports:
       - "8093:8093"
