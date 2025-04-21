@@ -26,7 +26,10 @@ io.on('connection', (socket) => {
 
   socket.on('sendMessage', async ({ sessionId, sender, message }) => {
     // Store in DB
-    const session = await ChatSession.findById(sessionId);
+    let session = await ChatSession.findById(sessionId);
+    if (!session) {
+      session = new ChatSession({ _id: sessionId, messages: [] });
+    }
     session.messages.push({ sender, message });
     await session.save();
 
@@ -46,7 +49,7 @@ app.use('/api/customers', faqRoutes);
 
 server.listen(port, () => {
   console.log(`Customer service listening on port ${port}`);
-  eurekaClient.start((error) => {
+  /*eurekaClient.start((error) => {
     console.log(error || 'Eureka client registered');
-  });
+  });*/
 });
