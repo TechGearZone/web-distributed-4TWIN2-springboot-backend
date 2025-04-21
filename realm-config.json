@@ -1,0 +1,48 @@
+{
+  "realm": "techgear",
+  "enabled": true,
+  "defaultRoles": ["USER", "ADMIN"],
+  "roles": {
+    "realm": [
+      {
+        "name": "USER",
+        "description": "Regular user role",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "ADMIN",
+        "description": "Administrator role",
+        "composite": false,
+        "clientRole": false
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "techgear-client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "SjsmyTNP8TX3QkYNf3woG2GtxaCCUWDe",
+      "redirectUris": ["http://localhost:8093/*"],
+      "webOrigins": ["*"],
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "directAccessGrantsEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["USER", "ADMIN"]
+    }
+  ]
+} 
