@@ -51,3 +51,12 @@ exports.updateStatus = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.getAllTickets = async (req, res) => {
+    try {
+        const tickets = await Ticket.find(); // or whatever your data source is
+        res.json(tickets);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};

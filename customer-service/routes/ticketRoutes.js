@@ -7,5 +7,6 @@ router.get('/tickets/:id', controller.getTicketById);
 router.get('/tickets/user/:userId', controller.getTicketsByUser);
 router.put('/tickets/:id/reply', controller.addReply);
 router.patch('/tickets/:id/status', controller.updateStatus);
+router.get('/tickets', controller.getAllTickets);
 
 module.exports = router;

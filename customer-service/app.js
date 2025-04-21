@@ -13,12 +13,7 @@ const cors = require('cors');
 
 const server = http.createServer(app);
 
-const io = socketIo(server, {
-  cors: {
-    origin: 'http://localhost:8761',
-    methods: ['GET', 'POST'],
-  }
-});
+const io = socketIo(server);
 
 const customerNamespace = io.of('/api/customers');
 
@@ -46,9 +41,6 @@ customerNamespace.on('connection', (socket) => {
   });
 });
 
-app.use(cors({
-  origin: 'http://localhost:8761',
-}));
 
 
 mongoose.connect('mongodb://localhost:27017/customer-service');
