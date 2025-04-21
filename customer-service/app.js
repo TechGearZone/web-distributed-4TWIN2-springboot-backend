@@ -9,14 +9,20 @@ const ticketRoutes = require('./routes/ticketRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const faqRoutes = require('./routes/faqRoutes');
 const eurekaClient = require('./eureka-client');
+const cors = require('cors');
+
 const server = http.createServer(app);
+
 const io = socketIo(server, {
-  cors: { origin: '*' }
+  cors: {
+    origin: 'http://localhost:8761',
+    methods: ['GET', 'POST'],
+  }
 });
 
-mongoose.connect('mongodb://localhost:27017/customer-service');
+const customerNamespace = io.of('/api/customers');
 
-io.on('connection', (socket) => {
+customerNamespace.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
   socket.on('join', ({ sessionId }) => {
@@ -25,7 +31,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendMessage', async ({ sessionId, sender, message }) => {
-    // Store in DB
     let session = await ChatSession.findById(sessionId);
     if (!session) {
       session = new ChatSession({ _id: sessionId, messages: [] });
@@ -33,7 +38,7 @@ io.on('connection', (socket) => {
     session.messages.push({ sender, message });
     await session.save();
 
-    io.to(sessionId).emit('newMessage', { sender, message });
+    customerNamespace.to(sessionId).emit('newMessage', { sender, message });
   });
 
   socket.on('disconnect', () => {
@@ -41,15 +46,22 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:8761',
+}));
 
+
+mongoose.connect('mongodb://localhost:27017/customer-service');
+
+app.use(express.json());
 app.use('/api/customers', ticketRoutes);
 app.use('/api/customers', chatRoutes);
 app.use('/api/customers', faqRoutes);
 
 server.listen(port, () => {
   console.log(`Customer service listening on port ${port}`);
-  /*eurekaClient.start((error) => {
+  eurekaClient.start((error) => {
     console.log(error || 'Eureka client registered');
-  });*/
+  });
 });
+
