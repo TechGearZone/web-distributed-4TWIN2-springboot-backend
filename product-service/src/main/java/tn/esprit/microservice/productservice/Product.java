@@ -1,6 +1,8 @@
 package tn.esprit.microservice.productservice;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ public class Product implements Serializable {
     private String category;
 
     @ElementCollection
+    @Fetch(FetchMode.JOIN)
     private List<String> images;
 
     private LocalDateTime createdAt;

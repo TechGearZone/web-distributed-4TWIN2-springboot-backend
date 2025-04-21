@@ -3,12 +3,17 @@ package tn.esprit.microservice.productservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @Service
+@Transactional
 public class ProductService implements IProductService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired
     private ProductRepository repo;
@@ -28,8 +33,17 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
-        return repo.findAll();
+        logger.info("Attempting to fetch all products");
+        try {
+            List<Product> products = repo.findAll();
+            logger.info("Successfully fetched {} products", products.size());
+            return products;
+        } catch (Exception e) {
+            logger.error("Error fetching all products", e);
+            throw e;
+        }
     }
 
     @Override
