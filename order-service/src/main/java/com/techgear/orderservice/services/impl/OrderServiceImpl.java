@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -212,7 +213,26 @@ public class OrderServiceImpl implements IOrderService {
         return productClient.getProductById(productId);
     }
 
+    @Override
+    public void reduceProductStock(Long productId, int quantity) {
+        log.info("Entering reduceProductStock with productId={}, quantity={}", productId, quantity);
 
+        try {
+            log.info("Calling productClient.reduceStock()");
+            ResponseEntity<String> response = productClient.reduceStock(productId, quantity);
+            log.info("Received response: {}", response);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                log.error("Failed to reduce stock. Status: {}, Body: {}",
+                        response.getStatusCode(), response.getBody());
+                throw new RuntimeException("Failed to reduce stock: " + response.getBody());
+            }
+            log.info("Stock reduction successful");
+        } catch (Exception e) {
+            log.error("Exception in reduceProductStock:", e);
+            throw new RuntimeException("Failed to reduce stock", e);
+        }
+    }
 }
 
 

@@ -8,15 +8,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+
 @RequestMapping("/api/products")
 public class ProductRestAPI {
 
-    @Autowired
-    private IProductService service;
-    @Autowired
-    private TokenService tokenService;
-    private ProductRepository productRepository;
+    private final IProductService service;
+    private final TokenService tokenService;
+    private final ProductRepository productRepository;
 
+    @Autowired
+    public ProductRestAPI(IProductService service, TokenService tokenService, ProductRepository productRepository) {
+        this.service = service;
+        this.tokenService = tokenService;
+        this.productRepository = productRepository;
+    }
     @GetMapping
     public List<Product> getAll() {
         return service.getAllProducts();
@@ -58,16 +63,16 @@ public class ProductRestAPI {
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/{id}/reduce-stock")
-    public void reduceStock(@PathVariable Long id, @RequestParam int quantity) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        if (product.getStock() < quantity) {
-            throw new RuntimeException("Not enough stock to reduce");
+    @PutMapping("/reduce-stock/{id}")
+    public ResponseEntity<String> reduceStock(@PathVariable Long id, @RequestParam int quantity) {
+        try {
+            service.reduceStock(id, quantity);
+            return ResponseEntity.ok("Stock reduced successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error reducing stock");
         }
-
-        product.setStock(product.getStock() - quantity);
-        productRepository.save(product);
     }
+
 }

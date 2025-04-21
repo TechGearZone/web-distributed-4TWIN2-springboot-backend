@@ -11,5 +11,6 @@ public interface IProductService {
     Product updateProduct(Long id, Product updated);
     void deleteProduct(Long id);
     public ComparisonResult compareWithExternalSources(String productName);
+    void reduceStock(Long productId, int quantity);
 }
 

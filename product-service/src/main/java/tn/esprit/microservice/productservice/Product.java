@@ -22,9 +22,17 @@ public class Product implements Serializable {
 
     @ElementCollection
     private List<String> images;
-
+    private String image;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public Long getId() {
         return id;

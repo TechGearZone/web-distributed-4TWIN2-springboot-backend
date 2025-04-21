@@ -76,5 +76,18 @@ public class ProductService implements IProductService {
         return new ComparisonResult(myProduct, ebayProducts);
     }
 
+    @Override
+    public void reduceStock(Long productId, int quantity) {
+        Product product = repo.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
+
+        if (product.getStock() < quantity) {
+            throw new IllegalArgumentException("Not enough stock for product: " + product.getName());
+        }
+
+        product.setStock(product.getStock() - quantity);
+        repo.save(product);
+    }
+
 }
 

@@ -187,5 +187,16 @@ public class OrderController {
     public Product getProductDetails(@PathVariable Long id) {
         return orderService.fetchProductDetails(id);
     }
-
+    @PutMapping("/product/{id}/reduce-stock")
+    public ResponseEntity<String> reduceProductStock(@PathVariable Long id, @RequestParam int quantity) {
+        try {
+            // Call orderService which internally calls ProductService to reduce stock
+            orderService.reduceProductStock(id, quantity);
+            return ResponseEntity.ok("Stock reduced successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error reducing stock");
+        }
+    }
 }

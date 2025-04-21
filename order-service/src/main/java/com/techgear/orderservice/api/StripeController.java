@@ -71,12 +71,18 @@ public class StripeController {
 
         for (Product productRequest : request.getProducts()) {
             // Fetch the complete product details from the database
+            Long productId = productRequest.getId();
+            int requestedQty = productRequest.getStock();
+
+            log.info("Calling Product Service via Feign to fetch product with ID: {}", productId);
+
             Product fullProduct = productClient.getProductById(productRequest.getId());
 
             if (fullProduct == null) {
+                log.warn("Product not found for ID: {}", productId);
                 return ResponseEntity.badRequest().body("Product with ID " + productRequest.getId() + " not found");
             }
-
+            log.info("Fetched product: {} (Stock: {}, Price: {})", fullProduct.getName(), fullProduct.getStock(), fullProduct.getPrice());
             // Set the requested quantity to the fetched product
             fullProduct.setStock(productRequest.getStock());
 
@@ -138,40 +144,44 @@ public class StripeController {
 
     @GetMapping("/success")
     public String paymentSuccess(@RequestParam("session_id") String sessionId) {
-        // Get the order ID associated with this session
+        log.info("Entering paymentSuccess with sessionId: {}", sessionId);
+
         Long orderId = sessionToOrderMap.get(sessionId);
+        log.info("Retrieved orderId {} for sessionId {}", orderId, sessionId);
 
         if (orderId == null) {
+            log.error("No order found for sessionId: {}", sessionId);
             return "Error: Order not found for this session";
         }
 
-        // Get the order
         Order order = orderService.getOrderById(orderId);
+        log.info("Retrieved order: {}", order);
 
         if (order == null) {
+            log.error("Order not found for orderId: {}", orderId);
             return "Error: Order not found";
         }
 
-        // Update order status
+        log.info("Updating order status to DELIVERED");
         order.setStatus(OrderStatus.DELIVERED);
         orderService.updateOrder(order.getId(), order);
 
-        // Reduce product stock
+        log.info("Processing order items for stock reduction");
         for (OrderItems item : order.getOrderItemsList()) {
-            // Send the actual quantity from the order item, not the quantity field
             int quantityToReduce = item.getQuantity().intValue();
+            Long productId = item.getProductId();
 
-            log.info("Sending stock update message for productId: {}, quantity: {}",
-                    item.getProductId(), quantityToReduce);
+            log.info("Attempting to reduce stock for product {} by {}", productId, quantityToReduce);
 
-            rabbitMQSender.sendStockUpdate(new StockUpdateMessage(
-                    item.getProductId(), quantityToReduce
-            ));
+            try {
+                orderService.reduceProductStock(productId, quantityToReduce);
+                log.info("Successfully called reduceProductStock for product {}", productId);
+            } catch (Exception e) {
+                log.error("Failed to reduce stock for productId {}: {}", productId, e.getMessage(), e);
+            }
         }
 
-        // Remove the session mapping
         sessionToOrderMap.remove(sessionId);
-
         return "Payment successful! Your order #" + order.getOrderNumber() + " has been confirmed.";
     }
 

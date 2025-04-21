@@ -16,4 +16,5 @@ public interface IOrderService {
     public Order updateOrder(Long id, Order updatedOrder);
     public Product fetchProductDetails(Long productId);
     public List<Order> getUnpaidOrders();
+    public void reduceProductStock(Long productId, int quantity);
 }

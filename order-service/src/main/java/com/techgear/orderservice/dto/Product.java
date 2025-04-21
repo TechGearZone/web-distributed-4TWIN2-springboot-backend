@@ -26,7 +26,14 @@ public class Product implements Serializable {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String image;
+    public String getImage() {
+        return image;
+    }
 
+    public void setImage(String image) {
+        this.image = image;
+    }
     public Long getId() {
         return id;
     }
