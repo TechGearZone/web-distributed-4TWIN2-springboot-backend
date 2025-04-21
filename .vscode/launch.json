@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug User Service",
+            "request": "launch",
+            "mainClass": "com.techgear.services.user.UserServiceApplication",
+            "projectName": "user-service",
+            "env": {
+                "JAVA_HOME": "C:\\Program Files\\Java\\jdk-17"
+            }
+        },
+        {
+            "type": "java",
+            "name": "Debug API Gateway",
+            "request": "launch",
+            "mainClass": "com.techgear.gateway.ApiGatewayApplication",
+            "projectName": "api-gateway",
+            "env": {
+                "JAVA_HOME": "C:\\Program Files\\Java\\jdk-17"
+            }
+        },
+        {
+            "type": "java",
+            "name": "Debug Eureka Server",
+            "request": "launch",
+            "mainClass": "com.techgear.eureka.EurekaServerApplication",
+            "projectName": "eureka-server",
+            "env": {
+                "JAVA_HOME": "C:\\Program Files\\Java\\jdk-17"
+            }
+        }
+    ]
+} 
